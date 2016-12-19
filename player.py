@@ -60,7 +60,8 @@ class Player(object):
 
                 self.mpd_client.update()
                 self.mpd_client.clear()
-                self.mpd_client.setvol(100)
+                # setvol not working dec 19 2016. uncomment or update when changing.
+#                self.mpd_client.setvol(100)
         except:
             print "Connection to MPD failed. Trying again in 10 seconds."
             time.sleep(10)
