@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# A program that adds an audiobook to the raspberry pi from a folder
+# specified by the user to the folder where mpd can find it.
+#
+
+if test "$1" = "--help"
+then
+cat <<- _EOF_
+bookadd
+-------
+
+A program that adds an audiobook to the raspberry pi from a folder
+specified by the user and puts it in the music directory of mpd
+
+Usage
+-----
+
+supply bookadd with the pathe to the directory containing the book
+audio files. The name of the directory will be stored as the name of the book
+
+_EOF_
+fi
+
+# Find the directory where mpd looks for audio
+bookdir=`grep "music_directory" ~/.mpdconf | head -1 | grep '".*"' -o | grep '[^"]*' -o`
+echo $bookdir
+
+# The directory of where it finds the book. Remove trailing /
+fromdir=`echo $1 | grep '.*[^/$]' -o`
+booktitle=`basename "$fromdir"`
+echo $fromdir
+echo $booktitle
+
+# The id for the book to be used. It is the first ten decimals of the md5 sum of the name of the directory
+bookidhex=`printf '%s' $booktitle | md5sum | cut -d ' ' -f 1`
+bookid=$(echo "ibase=16;${bookidhex^^}" |bc)
+
+echo $bookid
+echo $bookidhex
+
+# Write book title and book id to file bookfile
+if cat ~/Documents/python_programs/BookPlayer/bookfile | grep -q $bookid
+    then echo "Book already added."
+else `echo "$booktitle:$bookid" >> ~/Documents/python_programs/BookPlayer/bookfile`
+fi
+
+# Get the names of the files to be moved and copy them to bookdir folder.
+for f in "` find $fromdir/ -name "*.mp3"`";
+do
+    echo "$f"
+    fnam=`basename "$f"`
+    # Add bookid to the front of the book name when copying it
+    cp "$f" "$bookdir/$bookid$fnam"  ;
+done
+
+
