@@ -34,6 +34,9 @@ class NumpadReader(BookReader):
 
 
         def read_book_options(self):
+            """
+            Load the books from bookfile and store them as a list of [[bookname1, bookid1], ...]
+            """
             bookfile = open('bookfile')
             bookstring = bookfile.read()
             # Split books on new line
@@ -50,6 +53,9 @@ class NumpadReader(BookReader):
 
         
         def key_pressed(self, event):
+            """
+            This is the main function for navigating the reader. Runs on a separate thread from loop() function
+            """
             # If in listening book mode
             if mode:
                 if event.keysym in ['Right', 'KP_Right']:
