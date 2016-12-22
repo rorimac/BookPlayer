@@ -42,6 +42,7 @@ class BookReader(object):
 
         self.status_light = StatusLight(config.status_light_pin)
         thread = Thread(target=self.status_light.start)
+        thread.setDaemon(True)
         thread.start()
 
         self.setup_db()
