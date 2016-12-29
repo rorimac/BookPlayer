@@ -73,18 +73,18 @@ class Player(object):
         with self.mpd_client:
             state = self.mpd_client.status()['state']
             if state == 'play':
-                self.status_light.action = 'blink_pauze'
+#                self.status_light.action = 'blink_pauze'
                 self.mpd_client.pause()
             elif state == 'pause':
-                self.status_light.action = 'blink'
+#                self.status_light.action = 'blink'
                 self.mpd_client.play()
-            else:
-                self.status_light.interrupt('blink_fast', 3)
+#            else:
+#                self.status_light.interrupt('blink_fast', 3)
 
     def rewind(self, channel):
         """Rewind by 20s"""
 
-        self.status_light.interrupt('blink_fast', 3)
+#        self.status_light.interrupt('blink_fast', 3)
 
         if self.is_playing():
             song_index = int(self.book.part) - 1
@@ -126,7 +126,7 @@ class Player(object):
 
     def set_volume(self, volume):
         """Set the volume on the MPD client"""
-        self.status_light.interrupt('blink_fast', 3)
+#        self.status_light.interrupt('blink_fast', 3)
         with self.mpd_client:
             self.mpd_client.setvol(volume)
             print "volume set to %d" % volume
@@ -141,7 +141,7 @@ class Player(object):
         self.playing = False
         self.book.reset()
 
-        self.status_light.action = 'on'
+#        self.status_light.action = 'on'
 
         with self.mpd_client:
             self.mpd_client.stop()
@@ -175,7 +175,7 @@ class Player(object):
             parts = self.mpd_client.search('filename', book_id)
 
             if not parts:
-                self.status_light.interrupt('blink_fast', 3)
+#                self.status_light.interrupt('blink_fast', 3)
                 return
 
             self.mpd_client.clear()
@@ -193,7 +193,7 @@ class Player(object):
                 # start playing from the beginning
                 self.mpd_client.play()
 
-        self.status_light.action = 'blink'
+#        self.status_light.action = 'blink'
         self.book.file_info = self.get_file_info()
 
 

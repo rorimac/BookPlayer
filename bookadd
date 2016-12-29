@@ -40,9 +40,9 @@ echo $bookid
 echo $bookidhex
 
 # Write book title and book id to file bookfile
-if cat ~/Documents/python_programs/BookPlayer/bookfile | grep -q $bookid
+if cat ~/BookPlayer/bookfile | grep -q $bookid
     then echo "Book already added."
-else `echo "$booktitle:$bookid" >> ~/Documents/python_programs/BookPlayer/bookfile`
+else `echo "$booktitle:$bookid" >> ~/BookPlayer/bookfile`
 fi
 
 # Get the names of the files to be moved and copy them to bookdir folder.

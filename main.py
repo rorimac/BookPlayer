@@ -45,7 +45,7 @@ class BookReader(object):
         thread.setDaemon(True)
         thread.start()
 
-        self.setup_db()
+#        self.setup_db()
         self.player = Player(config.mpd_conn, self.status_light)
         self.setup_gpio()
 
@@ -121,12 +121,14 @@ class BookReader(object):
         self.player.book.part = int(status['song']) + 1
 
         #print "%s second of part %s" % (self.player.book.elapsed,  self.player.book.part)
+        self.setup_db()
 
         self.db_cursor.execute(
                 'INSERT OR REPLACE INTO progress (book_id, part, elapsed) VALUES (%s, %d, %f)' %\
                 (self.player.book.book_id, self.player.book.part, self.player.book.elapsed))
 
         self.db_conn.commit()
+        self.db_conn.close()
 
 
 if __name__ == '__main__':

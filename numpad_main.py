@@ -35,6 +35,9 @@ class NumpadReader(BookReader):
             # is_running is used to control termination of loop
             self.is_running = True
 
+            # id_book is the id of the book to be played
+            self.id_book = False
+
 
         def read_book_options(self):
             """
@@ -69,13 +72,13 @@ class NumpadReader(BookReader):
                 elif event.keysym in ['Left', 'KP_Left']:
                     self.player.rewind(None)
                 elif event.keysym in ['Up', 'KP_Up']:
-                    self.player.status_light.action = 'blink_pauze'
+#                    self.player.status_light.action = 'blink_pauze'
                     self.player.mpd_client.pause()
                     self.mode = 0
                 elif event.keysym in ['KP_begin', 'space']:
                     self.player.toggle_pause(None)
-                elif event.keysym in ['Down', 'KP_Down']:
-                    pass
+#                elif event.keysym in ['Down', 'KP_Down']:
+#                    pass
             # If in choosing book mode
             else:
                 if event.keysym in ['Right', 'KP_Right']:
@@ -90,6 +93,7 @@ class NumpadReader(BookReader):
                     pass
                 elif event.keysym in ['Down', 'KP_Down']:
                     self.mode = 1
+                    self.id_book = self.book_options[self.position][1]
 
         def loop(self):
             """The main event loop. This is where we look for new RFID cards on the RFID reader. If one is
@@ -105,23 +109,28 @@ class NumpadReader(BookReader):
                 elif self.player.finished_book():
                     # when at the end of a book, delete its progress from the db
                     # so we can listen to it again
+                    self.setup_db()
                     self.db_cursor.execute(
                         'DELETE FROM progress WHERE book_id = %d' % self.player.book.book_id)
                     self.db_conn.commit()
+                    self.db_conn.close()
                     self.player.book.reset()
 
-                rfid_card = self.rfid_reader.read()
+#                rfid_card = self.rfid_reader.read()
 
-                if not rfid_card:
-                    continue
+#                if not rfid_card:
+#                    continue
         
-                book_id = rfid_card.get_id()
+#                book_id = rfid_card.get_id()
+                book_id = self.id_book
 
                 if book_id and book_id != self.player.book.book_id: # a change in book id
 
+                    self.setup_db()
                     progress = self.db_cursor.execute(
                             'SELECT * FROM progress WHERE book_id = "%s"' % book_id).fetchone()
 
+                    self.db_conn.close()
                     self.player.play(book_id, progress)
             print "Outside loop"
             return
